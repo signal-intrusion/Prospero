@@ -7,7 +7,8 @@
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.0/jquery.min.js" type="text/javascript"></script>
 	<link href='http://fonts.googleapis.com/css?family=Press+Start+2P' rel='stylesheet' type='text/css'>
 	<script type="text/javascript">
-	
+	   "use strict";
+
 		window.addEventListener('load', eventWindowLoaded, false);
 		function eventWindowLoaded() {
    			canvasApp();
@@ -21,21 +22,21 @@
             }else{
             	var theCanvas = document.getElementById("canvas");
             	var ctx = theCanvas.getContext("2d");
-            	
-            	
+
+
             }
-            
+
              //-- Game Loop Variables --//
-            
+
             var STATE_INIT = 10;
             var STATE_LOADING = 20;
             var STATE_RESET = 30;
             var STATE_PLAYING = 40;
             var STATE_OVER = 50;
             var appState = STATE_INIT;
-            
+
             // -- Game state Switch -- //
-            
+
             function run(){
             	switch(appState) {
             		case STATE_INIT:
@@ -55,28 +56,28 @@
             			drawScreen();
 						break;
 					case STATE_OVER:
-						
+
 						gameOver();
 						break;
 				}
             }
-            
+
            // -- SOUND VARIABLES -- //
-           
+
            var bounceSound;
            var startSound;
            var audioType;
            var startSound;
            var hitSound;
            var gameOverSound;
-                              
+
             // -- Ball variables -- //
-            
+
             var ballsArray = [];
             var ballsIndex = 10;   // number of balls in the level
-            
+
             // -- Paddle variables -- //
-			
+
 			var paddleh;
 			var paddlew;
 			var easing = 0.3;
@@ -86,41 +87,41 @@
 			var paddleAngle;
 			var paddley = paddler;
             var paddlex = paddler;
-            
+
             var padTopX;
 		    var padTopY;
-			  
+
 			var padBotX;
 			var padBotY;
-            
+
 			// -- BG variables -- //
 			var bgIndex = 30;
 			var bgArray = new Array(2);
 			bgArray[0] = new Array(bgIndex);
 			bgArray[1] = new Array(bgIndex);
-			
+
 			// -- Other variables -- //
-			
+
 			var canvasMinX;
 			var canvasMaxX;
 			var intervalId = 0;
 			var centerx = 400;
 			var centery = 400;
-			
+
 			var mousex;
 			var mousey;
 			var mouseangle;
-		
+
 			var rightDown = false;
 			var leftDown = false;
-			
+
 			var playerScore = 0;
-			var myHighScore;       
-			
+			var myHighScore;
+
 			// --  Ball Class -- //
-			
+
 			function ball(x, y) {
-				
+
 				this.x = 150;
 				this.y = 150;
 				var dx = 4;
@@ -130,23 +131,23 @@
 				ballArray[0] = [ballIndex];
 				ballArray[1] = [ballIndex];
 				var h = Math.floor(Math.random() * 359)+1;
-				
+
 				this.init_ball = init_ball;
 				this.drawBall = drawBall;
 				this.moveBall = moveBall;
-							
+
 				function init_ball(){
 					for(var i=0; i <= ballIndex; i++){
 						ballArray[0][i] = centerx;
-						ballArray[1][i] = centery;            		
+						ballArray[1][i] = centery;
 					}
 				}
-				
+
 				function moveBall(){						// moves the ball every frame
-				  
+
 				  x += dx;									// move x pos
 				  y += dy;									// move y pos
-				  
+
 				  if (x + dx > theCanvas.width || x + dx < 0) {	//collision detection
 					dx = -dx;
 					bounceSound.get();
@@ -155,12 +156,12 @@
 					dy = -dy;
 					bounceSound.get();
 					}
-					
+
 					// -- Collision Algorithm -- //
-					
+
 					//checks the orientation of the paddle, then checks to see if the ball is within the paddle pos
-					
-					if (padTopX < padBotX) { 
+
+					if (padTopX < padBotX) {
 						if (padTopY < padBotY) {
 							if ((x + 10 > padTopX) && (x - 10 < padBotX) && (y +10 > padTopY) && (y - 10 < padBotY)){
 								hitSound.get();
@@ -178,7 +179,7 @@
 								dy = 4 * ((y-(paddley+paddleh/2))/paddleh);
 							}
 						}
-							
+
 					} else {
 						if (padTopY > padBotY){
 							if ((x - 10 < padTopX) && (x + 10 > padBotX) && (y - 10 < padTopY) && (y + 10 > padBotY)){
@@ -195,43 +196,43 @@
 								h = Math.floor(Math.random()*359)+1;
 								dx = 2 * ((x-(paddlex+paddlew/2))/paddlew);
 								dy = 4 * ((y-(paddley+paddleh/2))/paddleh);
-								
+
 							}
 						}
 					} // end collision algorithm
-				  
+
 					ballArray[0][ballIndex] = x;				// set last element of array to current ball pos
 					ballArray[1][ballIndex] = y;
-			
+
 					for(var i=1; i < ballIndex; i++){			// set each element of array to the next position
 						ballArray[0][i] = ballArray[0][i+1];
-						ballArray[1][i] = ballArray[1][i+1];            		
+						ballArray[1][i] = ballArray[1][i+1];
 					}
-            	
+
             	} //end moveball
-            	
-				
+
+
 				function drawBall () {
-					for(var i=1; i < ballIndex; i++){          		
-				
+					for(var i=1; i < ballIndex; i++){
+
 						ctx.beginPath();
 						ctx.lineWidth= (i/5);
 						ctx.strokeStyle = "hsl(" + h + ", 90%, 60%)";
-						ctx.arc(ballArray[0][i], ballArray[1][i], 10, 0, Math.PI*2, true); 
+						ctx.arc(ballArray[0][i], ballArray[1][i], 10, 0, Math.PI*2, true);
 						ctx.closePath();
 						ctx.stroke();
-				
+
 					}
 				} //end draw ball
-			
+
 			} // end ball class
-			
+
 			// ---- Target class ---- //
-			
+
 			function target(endX_, endY_) {
-			
+
 				// target variables //
-			
+
 				var x = centerx;
 				var y = centery;
 				//var endX = endX_;
@@ -241,14 +242,14 @@
 				//var calcx = endX - x;
 				//var calcy = endY - y;
 				//var angle = Math.atan2(calcy, calcx);
-				
+
 				var h = Math.floor(Math.random() * 359)+1;
-				
+
 				this.drawTarget = drawTarget;
 				this.moveTarget = moveTarget;
-				
+
 				// Draw Target //
-				
+
 				function drawTarget(){
 				  ctx.beginPath();
 				  ctx.lineWidth = 10;
@@ -257,20 +258,20 @@
 				  ctx.closePath();
 				  ctx.stroke();
 				}
-				
+
 				// Move Target //
-				
+
 				function moveTarget() {
-					
+
 					h++;
 					size += .3;
-					if (size >= theCanvas.width) {			
+					if (size >= theCanvas.width) {
 						gameOverSound.get();
 						appState = STATE_OVER;
 					}
 					// change
 				}
-			
+
 			} // end targets
 
 			function gameLoop() {
@@ -278,33 +279,33 @@
 			}
 
 			gameLoop();
-			
+
 			function initApp() {
-				
+
 				bounceSound = new soundPool(10);
 				bounceSound.init("bounce");
-				
+
 				hitSound = new soundPool(10);
 				hitSound.init("hit");
-				
+
 				gameOverSound = new soundPool(2);
 				gameOverSound.init("overSound");
-				
+
      			startSound = new Audio("start.wav");
 				startSound.volume = .8;
 				startSound.load();
-				
+
 				this.checkAudio = window.setInterval(function(){checkReadyState();},1000);
 				appState = STATE_LOADING;
 			}
-			
+
 			function checkReadyState() {
 			  if (startSound.readyState === 4) {
 			  	window.clearInterval(checkAudio);
 				appState = STATE_RESET;
 			  }
 			}
-			
+
 			function getHighScore() {
 				if ( localStorage.getItem('myHighScore')) {
 					myHighScore = localStorage.getItem('myHighScore');
@@ -313,16 +314,16 @@
 					myHighScore = 0;
 				}
 			}
-			
+
 			function gameOver() {
 				document.getElementById('over').style.display = "block";
 				document.getElementById('restart').style.display = "block";
 				if (playerScore > myHighScore) {
 					localStorage.setItem('myHighScore', playerScore);
 				}
-				  
+
 				  // Could not get this code to display text with proper styling
-				  
+
 				  // ctx.save();
 // 				  ctx.font = "40px Press Start 2P";
 // 				  ctx.fillStyle = "#FFF";
@@ -330,8 +331,8 @@
 // 				  ctx.fillText;
 // 				  ctx.restore();
 			}
-			
-	
+
+
 			function resetApp() {
 				init_paddle();
 				init_mouse();
@@ -346,12 +347,12 @@
 				document.getElementById('over').style.display = "none";
 				appState = STATE_PLAYING;
 			}
-            
+
             function init_bg(){
             	for(var i=0; i <= bgIndex; i++){
             	            		var a = (Math.random() * (Math.PI*2));
             		bgArray[0][i] = centerx + Math.cos(a) * (350 + Math.floor(Math.random() * 200));
-					bgArray[1][i] = centery + Math.sin(a) * (350 + Math.floor(Math.random() * 200));            		
+					bgArray[1][i] = centery + Math.sin(a) * (350 + Math.floor(Math.random() * 200));
             	}
             }
          	function init_paddle() {
@@ -359,18 +360,18 @@
 			  paddleh = 80;
 			  paddlew = 10;
 			}
-			
+
 			function init_mouse() { 						// start mouse
 			  canvasMinX = $("#canvas").offset().left;
 			  canvasMaxX = canvasMinX + theCanvas.width;
 			}
-			
+
 			// ----- SOUND POOL FUNCTION ----- //
 			// creates objects to store sounds //
 			// from: http://blog.sklambert.com/html5-canvas-game-html5-audio-and-finishing-touches/ //
-			
+
 			function soundPool(maxSize) {
-			
+
 				  var size = maxSize;
 				  var pool = [];
 				  this.pool = pool;
@@ -383,7 +384,7 @@
 					if (object == "bounce") {
 					  for (var i = 0; i < size; i++) {
 						// Initalize the sound
-						
+
 						bounce = new Audio("blip2.wav");
 						bounce.volume = .5;
 						bounce.load();
@@ -393,7 +394,7 @@
 					if (object == "hit") {
 					  for (var i = 0; i < size; i++) {
 						// Initalize the sound
-						
+
 						hit = new Audio("blip.wav");
 						hit.volume = .8;
 						hit.load();
@@ -403,14 +404,14 @@
 					if (object == "overSound") {
 					  for (var i = 0; i < size; i++) {
 						// Initalize the sound
-						
+
 						end = new Audio("gameover.wav");
 						end.volume = .4;
 						end.load();
 						pool[i] = end;
 					  }
 					}
-					
+
 				  };
 
 				  /*
@@ -423,27 +424,27 @@
 					currSound = (currSound + 1) % size;
 				  };
 			}
-			
+
 			function onMouseMove(evt) {						// When the mouse moves calculate the pos of the paddle
-				
+
 			  	mousex = evt.pageX;
 			  	mousey = evt.pageY;
-			  	
+
 			  	var calcx = mousex - centerx;
 			  	var calcy = mousey - centery;
 
 			  	mouseangle = Math.atan2(calcy, calcx);
 			    paddleAngle = mouseangle;
-			      
+
 			  	targetx = centerx + (Math.cos(mouseangle) * paddler);
 			  	targety = centery + (Math.sin(mouseangle) * paddler);
-			  	
+
 			  padTopX = paddlex + Math.sin(paddleAngle)*40; // get the pos of top of paddle
 			  padTopY = paddley + Math.cos(paddleAngle)*40;
-			  
+
 			  padBotX = paddlex - Math.sin(paddleAngle)*40; // get pos of bottom of paddle
 			  padBotY = paddley - Math.cos(paddleAngle)*40;
-			  	
+
 			}
 
             function rect(x,y,w,h) { 			// draws a rect
@@ -452,83 +453,83 @@
 			  ctx.closePath();
 			  ctx.fill();
 			}
-                       
+
             function drawBg() {					// draw the bg lines
             	for(var i=0; i<=bgIndex; i++){
-            		
+
             		// Draw lines to center
-            		
-            		ctx.beginPath();              
+
+            		ctx.beginPath();
 					ctx.lineWidth="1";
 					ctx.strokeStyle="green";  // Green path
 					ctx.moveTo(bgArray[0][i],bgArray[1][i]);
 					ctx.lineTo(centerx,centery);
-					ctx.stroke(); 
-					
+					ctx.stroke();
+
 					ctx.beginPath();
 					ctx.strokeStyle = "rgba(30,30,30,.6)";
 					ctx.lineWidth=".5";
-					ctx.arc(centery, centerx, 350, 0, Math.PI*2, true); 
+					ctx.arc(centery, centerx, 350, 0, Math.PI*2, true);
 					ctx.closePath();
 					ctx.stroke();
-					 
+
             	}
             }
-            
+
             function init_balls() {
             	for (var i = 0; i < ballsIndex; i++) {
             		var temp_ball =  new ball(Math.floor(Math.random()*400), 50);
             		ballsArray.push(temp_ball);
-            	
+
             	}
             	for (var i = 0; i < ballsIndex; i++) {
             		ballsArray[i].init_ball();
             	}
             }
-            
+
             $(document).mousemove(onMouseMove);
-            
+
             function drawScreen() {
-            	  
+
             	  document.getElementById('score').innerHTML = playerScore;
-            	  
+
 				  document.getElementById('highScore').innerHTML = myHighScore;
-            	  
+
 				  ctx.save();
 				  ctx.fillStyle = "rgba(10, 10, 50, 1)";
 				  rect(0,0,800,800);
 				  ctx.restore();
-				  
+
 				  drawBg();
-				  
+
 				  target1.moveTarget();
 				  target1.drawTarget();
-				  
+
 				  for (var i = 0; i < ballsIndex; i++) {
             	      ballsArray[i].moveBall();
             	      ballsArray[i].drawBall();
             	  }
 				  ball1.moveBall();
 				  ball1.drawBall();
-				  	
+
 				  paddley += ((targety - paddley) * .2 );
 				  paddlex += ((targetx - paddlex) * .2 );
-		
-				  
+
+
 				  ctx.save();
 				  ctx.setTransform(1,0,0,1,0,0)
 				  ctx.translate(paddlex,paddley);
     			  ctx.rotate(paddleAngle);
-    			  
+
 			      ctx.fillStyle = "red";
 				  rect(-5, -20, paddlew, paddleh);
 				  ctx.restore();
-			
+
 			 }
 		}// end function canvasApp
-    	
+
     	</script>
-    	
+
     	<style>
     	.score {
         position: absolute;
@@ -539,7 +540,7 @@
         font-size: 30px;
         z-index: 99;
         }
-        
+
         .highScore {
         position: absolute;
         top: 40px;
@@ -549,7 +550,7 @@
         font-size: 20px;
         z-index: 98;
         }
-        
+
         #over {
         position: absolute;
         top: 340px;
@@ -560,12 +561,12 @@
         z-index: 97;
         display: none;
         }
-        
-        
+
+
         </style>
-        
+
     </head>
-	<body>	
+	<body>
 	    <div class="highScore">HIGH SCORE: <span id="highScore"></span></div>
 		<div class="score">SCORE: <span id="score"></span></div>
 		<div class="over"><span id="over" onclick="resetApp()">Game Over!</span></div>
@@ -574,8 +575,8 @@
                 Your browser does not support HTML5 Canvas.
             </canvas>
         </div>
-    
-        
-        
-	</body> 
-</html> 
+
+
+
+	</body>
+</html>
